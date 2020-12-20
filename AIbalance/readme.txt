@@ -1,0 +1,1 @@
+per usarlo con python 3.6 importare gym commentare _win_os_check() se rompe i coglioni e fixare i parametri dell'env in cartpole.py
