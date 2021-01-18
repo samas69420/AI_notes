@@ -32,7 +32,7 @@ def init():
             el2=[] #qui ci metto le sinapsi per il singolo neurone
             for k in range(len(neuron.neurons[0])):
                 n2=neuron.neurons[i+1][k]
-                el2.append(synapse(canvas,n1,n2,random.uniform(-1,1)))
+                el2.append(synapse(canvas,n1,n2,random.uniform(-0.8,1.2)))
             el.append(el2)
         synapse.synapses.append(el)
 
@@ -53,12 +53,12 @@ def evolve():
 def fire():
     for i,col in enumerate(neuron.neurons):
         for element in col:
-            if element.state >= threshold and i<len(neuron.neurons)-1:
+            if (element.state >= threshold_pos or element.state<=threshold_neg) and i<len(neuron.neurons)-1:
                 element.last=time.time()
                 element.propagate()
                 element.state = 0
-            if element.state >= threshold and i==len(neuron.neurons)-1:
-                # qui faccio una sorta di propapate ma farlocco fasullo fake gimmik lmao
+            if (element.state >= threshold_pos or element.state <= threshold_neg) and i==len(neuron.neurons)-1:
+                # qui faccio una sorta di propagate ma farlocco fasullo fake gimmik lmao
                 canvas.itemconfig(element.img, fill="green")
                 element.last = time.time()
                 element.state = 0
@@ -99,12 +99,13 @@ window.bind("<KeyRelease>", release)
 window.title('8==D')
 WID=800
 HE=600
-refresh = 0.01 #ogni quanto vengono eseguite le istruzioni nel customloop
+refresh = 0.005 #ogni quanto vengono eseguite le istruzioni nel customloop
 canvas = Canvas(window, width=WID, height=HE, bg="black")
 canvas.pack()
 t0 = time.time() # per il customloop
 t00 = time.time() # solo per l'input
-threshold=1
+threshold_pos=1.23
+threshold_neg=-6.9
 try:
     init()
     customloop(refresh)
