@@ -47,21 +47,20 @@ def evolve():
     for element in synapse.spikes:
         if canvas.coords(element[0])[0]>element[3][0] and canvas.coords(element[0])[1]>element[3][1]:
             canvas.delete(element[0])
+            fire(element[5]) # controlla lo stato del neurone e spara
             synapse.spikes.remove(element)
     canvas.update()
 
-def fire():
-    for i,col in enumerate(neuron.neurons):
-        for element in col:
-            if (element.state >= threshold_pos or element.state<=threshold_neg) and i<len(neuron.neurons)-1:
-                element.last=time.time()
-                element.propagate()
-                element.state = 0
-            if (element.state >= threshold_pos or element.state <= threshold_neg) and i==len(neuron.neurons)-1:
-                # qui faccio una sorta di propagate ma farlocco fasullo fake gimmik lmao
-                canvas.itemconfig(element.img, fill="green")
-                element.last = time.time()
-                element.state = 0
+def fire(element):
+    if (element.state >= threshold_pos or element.state<=threshold_neg) and element.coords[0]<len(neuron.neurons):
+        element.last=time.time()
+        element.propagate()
+        element.state = 0
+    if (element.state >= threshold_pos or element.state <= threshold_neg) and element.coords[0]==len(neuron.neurons):
+        # qui faccio una sorta di propagate ma farlocco fasullo fake gimmik lmao
+        canvas.itemconfig(element.img, fill="green")
+        element.last = time.time()
+        element.state = 0
 
 
 def shutdown():
@@ -87,7 +86,6 @@ def customloop(dt):
                 t00=time.time()
 
             evolve() # propaga gli spikes nella lista
-            fire() # controlla lo stato dei neuroni e spara
             shutdown() # spegne i neuroni che hanno appena sparato
 
             t0 = time.time()
@@ -99,13 +97,13 @@ window.bind("<KeyRelease>", release)
 window.title('8==D')
 WID=800
 HE=600
-refresh = 0.005 #ogni quanto vengono eseguite le istruzioni nel customloop
+refresh = 0.001 #ogni quanto vengono eseguite le istruzioni nel customloop
 canvas = Canvas(window, width=WID, height=HE, bg="black")
 canvas.pack()
 t0 = time.time() # per il customloop
 t00 = time.time() # solo per l'input
-threshold_pos=1.23
-threshold_neg=-6.9
+threshold_pos=3
+threshold_neg=-3
 try:
     init()
     customloop(refresh)
